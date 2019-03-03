@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +18,11 @@ import com.fedex.oce.service.CurrencyConvertorServiceProxy;
 
 @RestController
 public class CurrencyConvertorController {
+	
+	private final static Logger LOG = LoggerFactory.getLogger(CurrencyConvertorController.class);
 
-	@Autowired
+
+	@Autowired(required=true)
 	CurrencyConvertorServiceProxy ccProxy;
 
 	@GetMapping("/ping")
@@ -51,6 +56,8 @@ public class CurrencyConvertorController {
 			@PathVariable BigDecimal quantity) {
 
 		CurrencyConversionBean ccBean = ccProxy.getExchangeValue(from, to);
+		
+		LOG.info("{}", ccBean);
 
 		return new CurrencyConversionBean(ccBean.getId(), from, to, ccBean.getConversionMultiple(), quantity,
 				ccBean.getConversionMultiple().multiply(quantity), ccBean.getPort());
